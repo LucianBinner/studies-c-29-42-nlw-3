@@ -1,24 +1,24 @@
-import React, { useState } from 'react'
 import { Marker, useMapEvents } from 'react-leaflet';
+import { usePosition } from '../../Providers/PositionProvider';
 
 import { EventPosition } from '../../types';
 
 import mapIcon from "../../utils/mapIcon";
 
 export default function LocationMarker() {
-    const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
-    
+    const { position, addPosition } = usePosition();
+
     useMapEvents({
         click(e: EventPosition) {
             const { lat, lng } = e.latlng;
-            setPosition({
+            addPosition({
                 latitude: lat,
                 longitude: lng
             });
         },
     })
 
-    return position === null ? null : (
+    return position.latitude === 0 ? null : (
         <Marker
             interactive={false}
             position={[

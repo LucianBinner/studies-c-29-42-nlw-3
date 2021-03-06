@@ -6,8 +6,8 @@ export type EventPosition = {
 }
 
 export type TPosition = {
-    latitude: Number;
-    longitude: Number;
+    latitude: number;
+    longitude: number;
 }
 
 export type TPositionContextState = {

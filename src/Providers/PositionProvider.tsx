@@ -1,4 +1,4 @@
-import React, { createContext, useState, FC, useContext } from "react";
+import { createContext, useState, FC, useContext } from "react";
 import { TPositionContextState, TPosition } from "../types";
 
 const contextDefaultValues: TPositionContextState = {
