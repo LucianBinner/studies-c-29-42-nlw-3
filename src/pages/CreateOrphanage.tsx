@@ -1,16 +1,32 @@
-import React from "react";
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+// 1h06min
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer } from 'react-leaflet';
 
 import { FiPlus } from "react-icons/fi";
 
-import Sidebar from "../components/Sidebar";
-
-import mapIcon from "../utils/mapIcon";
+import Sidebar from "../components/Sidebar/Sidebar";
+import LocationMarker from "../components/LocationMarker/LocationMarker";
 
 import '../styles/pages/create-orphanage.css';
 
 export default function CreateOrphanage() {
-  
+  const [geolocationLatitude, setGeolocationLatitude] = useState<number | undefined>();
+  const [geolocationLongitude, setGeolocationLongitude] = useState<number | undefined>();
+
+  const [name, setName] = useState('');
+  const [about, setAbout] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [opening_hours, setOpeningHours] = useState('');
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(position => {
+      if (position.coords.latitude !== null || position.coords.longitude !== null) {
+        setGeolocationLatitude(position.coords.latitude);
+        setGeolocationLongitude(position.coords.longitude);
+      }
+    })
+  }, [geolocationLatitude, geolocationLongitude]);
+
   return (
     <div id="page-create-orphanage">
       <Sidebar />
@@ -19,27 +35,28 @@ export default function CreateOrphanage() {
         <form className="create-orphanage-form">
           <fieldset>
             <legend>Dados</legend>
+            {(geolocationLatitude !== undefined && geolocationLongitude !== undefined) && (
+              <MapContainer
+                center={[geolocationLatitude, geolocationLongitude]}
+                style={{ width: '100%', height: 280 }}
+                zoom={15}
+              >
+                <TileLayer
+                  url={`https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`}
+                />
+                <LocationMarker />
 
-            <MapContainer 
-              center={[-27.2092052,-49.6401092]} 
-              style={{ width: '100%', height: 280 }}
-              zoom={15}
-            >
-              <TileLayer 
-                url={`https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`}
-              />
-
-              <Marker interactive={false} icon={mapIcon} position={[-27.2092052,-49.6401092]} />
-            </MapContainer>
+              </MapContainer>
+            )}
 
             <div className="input-block">
               <label htmlFor="name">Nome</label>
-              <input id="name" />
+              <input id="name" value={name} onChange={event => setName(event.target.value)} />
             </div>
 
             <div className="input-block">
               <label htmlFor="about">Sobre <span>Máximo de 300 caracteres</span></label>
-              <textarea id="name" maxLength={300} />
+              <textarea id="name" maxLength={300} value={about} onChange={event => setAbout(event.target.value)} />
             </div>
 
             <div className="input-block">
@@ -60,12 +77,12 @@ export default function CreateOrphanage() {
 
             <div className="input-block">
               <label htmlFor="instructions">Instruções</label>
-              <textarea id="instructions" />
+              <textarea id="instructions" value={instructions} onChange={event => setInstructions(event.target.value)} />
             </div>
 
             <div className="input-block">
-              <label htmlFor="opening_hours">Nome</label>
-              <input id="opening_hours" />
+              <label htmlFor="opening_hours">Horário de Funcionamento</label>
+              <input id="opening_hours" value={opening_hours} onChange={event => setOpeningHours(event.target.value)} />
             </div>
 
             <div className="input-block">
